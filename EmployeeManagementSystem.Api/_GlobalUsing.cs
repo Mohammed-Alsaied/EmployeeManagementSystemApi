@@ -1,0 +1,11 @@
+﻿global using Common.AssemplyScanning;
+global using Departments.Server;
+global using EmployeeManagementSystem.EF;
+global using Employees.Server;
+global using EmployeeTasks.Server;
+global using Managers.Server;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.IdentityModel.Tokens;
+global using System.Text;

@@ -101,39 +101,6 @@ public class AuthenticateUsersController : ControllerBase
     }
 
     [HttpPost]
-    [Route("register-admin")]
-    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
-    {
-        var userExists = await _userManager.FindByNameAsync(model.UserName);
-        if (userExists != null)
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
-
-        user = new()
-        {
-            Email = model.Email,
-            SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = model.UserName
-        };
-        var result = await _userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-
-        if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-        if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-            await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-
-        if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-        {
-            await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-        }
-        if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-        {
-            await _userManager.AddToRoleAsync(user, UserRoles.User);
-        }
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
-    }
-    [HttpPost]
     [AllowAnonymous]
     [Route("forget-password")]
     public async Task<IActionResult> ForgetPassword([Required] string email)
@@ -142,7 +109,7 @@ public class AuthenticateUsersController : ControllerBase
         if (user != null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var forgotPasswordLink = Url.Action(nameof(ResetPassword), "Authenticate", new { token, email = user.Email }, Request.Scheme);
+            var forgotPasswordLink = Url.Action(nameof(ResetPassword), "AuthenticateUsers", new { token, email = user.Email }, Request.Scheme);
             var message = new Message(new string[] { user.Email! }, "Forgot Password Link", forgotPasswordLink!);
             _emailService.SendEmail(message);
             return StatusCode(StatusCodes.Status200OK,

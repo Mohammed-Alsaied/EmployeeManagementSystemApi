@@ -99,7 +99,7 @@ public class AuthenticateAdminsController : ControllerBase
         if (user != null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var forgotPasswordLink = Url.Action(nameof(ResetPassword), "Authenticate", new { token, email = user.Email }, Request.Scheme);
+            var forgotPasswordLink = Url.Action(nameof(ResetPassword), "AuthenticateAdmins", new { token, email = user.Email }, Request.Scheme);
             var message = new Message(new string[] { user.Email! }, "Forgot Password Link", forgotPasswordLink!);
             _emailService.SendEmail(message);
             return StatusCode(StatusCodes.Status200OK,
